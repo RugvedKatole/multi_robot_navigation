@@ -1,0 +1,18 @@
+<launch>
+  <!-- start Gazebo with an empty world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
+
+  
+  <!-- spawn the robot -->
+  <arg name="ns" default="bot_1"/>
+  <group ns="bot_1">
+  <param name="tf_prefix" value="bot_1" />
+  <include file="$(find multi_robot_navigation)/launch/includes/robot.launch.xml">
+  <arg name="model" value="burger"/>
+  <arg name="x_pos" default="2.0"/>
+  <arg name="y_pos" default="2.0"/>
+  <arg name="z_pos" default="0.0"/>
+  </include>
+  </group>
+
+</launch>
