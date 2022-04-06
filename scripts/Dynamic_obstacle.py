@@ -16,6 +16,9 @@ from PID_control import PID_control
 # and obviously odometry of them"""
 pi = np.pi
 inf = np.inf
+
+a = Twist()
+
 class dynamic_obstacle():
     def __init__(self,Ro,v=0.1):
         self.object_radius =  Ro
@@ -206,9 +209,9 @@ class robot():
                     # takin intersection of all N1 , N21 and N22
                 cone = Intersection(N1,N21_int_N22)
             if cone.contains(v_pref):
-                while cone.contains(v_pref):
-                    v_pref += 0.1
-                return v_pref
+                # while cone.contains(v_pref):
+                #     v_pref += 0.1
+                return v_pref + pi/3
             else:
                 return v_pref
             # try:
@@ -217,6 +220,7 @@ class robot():
             #     return cone.args[1] + theta0 + 0.1
         except:
             return arctan2(y-self.y,x-self.x)
+            # return 
     
     def go_simon(self,x,y):
         law = PID_control("test",publisher_name="/tb3_0/cmd_vel",odom_name="/tb3_0/odom")
@@ -252,7 +256,7 @@ if __name__ == '__main__':
     rospy.Subscriber("/tb3_0/odom",Odometry,robot1.locate)
     # rospy.Subscriber("/tb3_1/odom",Odometry,obstacle.locate)
     while not rospy.is_shutdown():
-        robot1.go_simon(4,0)
+        robot1.go_simon(2.5,0)
         
 
 

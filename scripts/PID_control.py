@@ -42,13 +42,22 @@ class PID_control():
         return alpha_i - cur_pose.theta
     
     def Dist(self,goal_pose,cur_pose):
-        return np.sqrt((goal_pose.x - cur_pose.x)**2 + (goal_pose.y - cur_pose.y)**2)
+        return math.sqrt((goal_pose.x - cur_pose.x)**2 + (goal_pose.y - cur_pose.y)**2)
 
-    def Velocity_tracking_law(self,goal_pose):
+    def Velocity_tracking_law(self,vx,vy):
         # print(goal_pose)
         """ Tracking law
         V = kv*cos(e_alpha)*D_i
         W_i = ka*e_alpha + alpha_dot"""
+        # goal_pose = Pose2D(vx*1 + self.bot_location.x, vy*1  + self.bot_location.y,0)
+        theta_des = math.atan2(vy,vx)
+        v_des = math.sqrt(vx**2 + vy**2)
+
+        goal_pose = Pose2D()
+        goal_pose.x = v_des*math.cos(theta_des) + self.bot_location.x
+        goal_pose.y = v_des*math.sin(theta_des) + self.bot_location.y
+        goal_pose.theta = 0
+        # print(self.name,goal_pose)
         e_alpha = self.E_alpha_i(goal_pose, self.bot_location)
         if e_alpha < -pi:
             e_alpha += 2*pi
@@ -57,8 +66,9 @@ class PID_control():
         # print("this is e_alphs: ",e_alpha)
         D_i = self.Dist(goal_pose, self.bot_location)
 
-        V = self.kv*np.cos(e_alpha)*D_i
-
+        V = self.kv*math.cos(e_alpha)*D_i
+        # if V > 0.2:
+        #     V = 0.2
         W_i = self.ka*e_alpha + goal_pose.theta
         # W_i = self.ka*e_alpha + 0
         # print(W_i)
@@ -68,6 +78,15 @@ class PID_control():
         # cmd_vel.angular.z = V/2
         # print(cmd_vel)
         self.pub_cmd_vel.publish(cmd_vel)
+    
+    def simon_go(self,x,y):
+        v_des = np.arctan2(y-self.bot_location.y,x-self.bot_location.x)
+        param_points.x = 0.1*np.cos(v_des) + self.bot_location.x
+        param_points.y = 0.1*np.sin(v_des) + self.bot_location.y
+        param_points.theta = 0
+        self.Velocity_tracking_law(param_points)
+
+
 
 if __name__ == '__main__':
     rospy.init_node('PID_control')
@@ -75,14 +94,8 @@ if __name__ == '__main__':
     r=rospy.Rate(50)
     param_points = Pose2D()
     rad = 2
-    theta = pi/2 
+    theta = -pi
     while not rospy.is_shutdown():
-        param_points.x = 1*np.cos(theta) 
-        # param_points.x += 0.002
-        param_points.y = rad*np.sin(theta)
-        # param_points.y = 2
-        param_points.theta = -0.1
-        # print(param_points,'\n',rospy.get_time())
-        PID.Velocity_tracking_law(param_points)
-        theta -= 0.002             
+        
+        PID.simon_go(-2,0)         
         r.sleep()
