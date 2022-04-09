@@ -1,53 +1,4 @@
 <launch>
-  <!-- start Gazebo with an empty world --> 
-  <!-- <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="paused" value="false"/>
-    <arg name="use_sim_time" value="true"/>
-    <arg name="gui" value="true"/>
-    <arg name="headless" value="false"/>
-    <arg name="debug" value="false"/>
-  </include> -->
-
-  
-  <!-- spawn the robot -->
-  <!-- <group ns="bot_1">
-  <include file="$(find multi_robot_navigation)/launch/includes/robot.launch.xml">
-  <arg name="model" value="burger"/>
-  <arg name="x_pos" default="0.0"/>
-  <arg name="y_pos" default="0.0"/>
-  <arg name="z_pos" default="0.0"/>
-  <arg name="first_tb3"  default="bot_1"/>
-  </include>
-  </group>
-  
-  <group ns="bot_2">
-  <include file="$(find multi_robot_navigation)/launch/includes/robot.launch.xml">
-  <arg name="model" value="burger"/>
-  <arg name="x_pos" default="0.0"/>
-  <arg name="y_pos" default="2.0"/>
-  <arg name="z_pos" default="0.0"/>
-  <arg name="first_tb3"  default="bot_2"/>
-  </include>
-  </group>
-
-  <group ns="bot_3">
-  <include file="$(find multi_robot_navigation)/launch/includes/robot.launch.xml">
-  <arg name="model" value="burger"/>
-  <arg name="x_pos" default="2.0"/>
-  <arg name="y_pos" default="0.0"/>
-  <arg name="z_pos" default="0.0"/>
-  </include>
-  </group>
-
-  <group ns="bot_4">
-  <include file="$(find multi_robot_navigation)/launch/includes/robot.launch.xml">
-  <arg name="model" value="burger"/>
-  <arg name="x_pos" default="2.0"/>
-  <arg name="y_pos" default="2.0"/>
-  <arg name="z_pos" default="0.0"/>
-  </include>
-  </group>
- -->
   <arg name="model" default="$(env TURTLEBOT3_MODEL)" doc="model type [burger, waffle, waffle_pi]"/>
   <arg name="first_tb3"  default="tb3_0"/>
   <arg name="second_tb3" default="tb3_1"/>
@@ -93,6 +44,14 @@
     </node>
     
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg first_tb3) -x $(arg first_tb3_x_pos) -y $(arg first_tb3_y_pos) -z $(arg first_tb3_z_pos) -Y $(arg first_tb3_yaw) -param robot_description" />
+    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_0">
+      <remap from="/odom" to="/$(arg first_tb3)/odom"/>
+      <remap from="/cmd_vel" to="/$(arg first_tb3)/cmd_vel"/>
+    </node>
+    <!-- <node pkg="multi_robot_navigation" type="obstacles.py" name="assign3_obs">
+      <remap from="/odom" to="/$(arg bot_3)/odom"/>
+      <remap from="/cmd_vel" to="/$(arg bot_3)/cmd_vel"/>
+    </node> -->
   </group>
 
 
@@ -105,6 +64,10 @@
     </node>
 
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg second_tb3) -x $(arg second_tb3_x_pos) -y $(arg second_tb3_y_pos) -z $(arg second_tb3_z_pos) -Y $(arg second_tb3_yaw) -param robot_description" />
+    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_1">
+      <remap from="/odom" to="/$(arg second_tb3)/odom"/>
+      <remap from="/cmd_vel" to="/$(arg second_tb3)/cmd_vel"/>
+    </node>
   </group>
 
   <group ns = "$(arg third_tb3)">
@@ -116,6 +79,10 @@
     </node>
 
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg third_tb3) -x $(arg third_tb3_x_pos) -y $(arg third_tb3_y_pos) -z $(arg third_tb3_z_pos) -Y $(arg third_tb3_yaw) -param robot_description" />
+    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_2">
+      <remap from="/odom" to="/$(arg third_tb3)/odom"/>
+      <remap from="/cmd_vel" to="/$(arg third_tb3)/cmd_vel"/>
+    </node>
   </group>
 
 
@@ -128,6 +95,12 @@
     </node>
 
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg fourth_tb3) -x $(arg fourth_tb3_x_pos) -y $(arg fourth_tb3_y_pos) -z $(arg fourth_tb3_z_pos) -Y $(arg fourth_tb3_yaw) -param robot_description" />
+    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_3">
+      <remap from="/odom" to="/$(arg fourth_tb3)/odom"/>
+      <remap from="/cmd_vel" to="/$(arg fourth_tb3)/cmd_vel"/>
+    </node>
   </group>
+
+  <node pkg="multi_robot_navigation" type="obstacles.py" name="obstacles_publishing"/>
 
 </launch>
