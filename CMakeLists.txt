@@ -58,7 +58,6 @@ add_message_files(
   FILES
   Obs.msg
   ObsData.msg
-  nav_msgs/Odometry
 )
 
 ## Generate services in the 'srv' folder
@@ -77,7 +76,7 @@ add_message_files(
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
-  DEPENDENCIES
+  DEPENDENCIES 
   std_msgs
   geometry_msgs
   nav_msgs

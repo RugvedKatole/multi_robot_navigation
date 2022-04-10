@@ -77,7 +77,8 @@ class PID_control():
         cmd_vel.angular.z = W_i
         # cmd_vel.angular.z = V/2
         # print(cmd_vel)
-        self.pub_cmd_vel.publish(cmd_vel)
+        # self.pub_cmd_vel.publish(cmd_vel)
+        return cmd_vel
     
     def simon_go(self,x,y):
         v_des = np.arctan2(y-self.bot_location.y,x-self.bot_location.x)

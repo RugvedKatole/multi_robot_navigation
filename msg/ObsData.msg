@@ -1,2 +1,2 @@
 string[] bot_id
-Odometry[] obstacles
+nav_msgs/Odometry[] obstacles

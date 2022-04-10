@@ -18,10 +18,10 @@ class Obstacles:
         rospy.Subscriber('/tb3_2/odom', Odometry, self.callback_odom, 'tb3_2')
         rospy.Subscriber('/tb3_3/odom', Odometry, self.callback_odom, 'tb3_3')
         self.obs = {}
-        self.obs['tb3_0'] = Odometry()
-        self.obs['tb3_1'] = Odometry()
-        self.obs['tb3_2'] = Odometry()
-        self.obs['tb3_3'] = Odometry()
+        self.obs['/tb3_0/'] = Odometry()
+        self.obs['/tb3_1/'] = Odometry()
+        self.obs['/tb3_2/'] = Odometry()
+        self.obs['/tb3_3/'] = Odometry()
 
     def callback_odom(self, data, bot_id):
         self.obs[bot_id] = data
