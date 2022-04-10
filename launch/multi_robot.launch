@@ -95,7 +95,7 @@
     </node>
 
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg fourth_tb3) -x $(arg fourth_tb3_x_pos) -y $(arg fourth_tb3_y_pos) -z $(arg fourth_tb3_z_pos) -Y $(arg fourth_tb3_yaw) -param robot_description" />
-    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_3">
+    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_3" output="screen">
       <remap from="/odom" to="/$(arg fourth_tb3)/odom"/>
       <remap from="/cmd_vel" to="/$(arg fourth_tb3)/cmd_vel"/>
     </node>

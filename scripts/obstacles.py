@@ -13,10 +13,10 @@ class Obstacles:
     def __init__(self):
 
         self.obs_pub = rospy.Publisher('/obs_data', ObsData, queue_size = 10)
-        rospy.Subscriber('/tb3_0/odom', Odometry, self.callback_odom, 'tb3_0')
-        rospy.Subscriber('/tb3_1/odom', Odometry, self.callback_odom, 'tb3_1')
-        rospy.Subscriber('/tb3_2/odom', Odometry, self.callback_odom, 'tb3_2')
-        rospy.Subscriber('/tb3_3/odom', Odometry, self.callback_odom, 'tb3_3')
+        rospy.Subscriber('/tb3_0/odom', Odometry, self.callback_odom, '/tb3_0/')
+        rospy.Subscriber('/tb3_1/odom', Odometry, self.callback_odom, '/tb3_1/')
+        rospy.Subscriber('/tb3_2/odom', Odometry, self.callback_odom, '/tb3_2/')
+        rospy.Subscriber('/tb3_3/odom', Odometry, self.callback_odom, '/tb3_3/')
         self.obs = {}
         self.obs['/tb3_0/'] = Odometry()
         self.obs['/tb3_1/'] = Odometry()
