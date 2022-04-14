@@ -20,7 +20,7 @@ class RobotHRVO(object):
         
         #pubs and subs
         self.obstacles = rospy.Subscriber('/obs_data',ObsData,self.update_obstacles)
-        self.cmd_vel = rospy.Publisher(self.namespace + "cmd_vel",Twist,queue_size=1)
+        self.cmd_vel = rospy.Publisher("cmd_vel",Twist,queue_size=1)
         # self.cmd_pub0 = rospy.Publisher("/tb3_0/cmd_vel",Twist,queue_size=1)
         # self.odom_sub0 =  rospy.Subscriber("/tb3_0/odom", Odometry, self.odom_update_0,queue_size=1)
 
@@ -51,11 +51,7 @@ class RobotHRVO(object):
         self.ws_model["circular_obstacles"] = []
         self.ws_model['boundary'] = []
 
-        self.bot1_goal = [2,2]
-        self.bot2_goal = [0,2]
-        self.bot3_goal = [0,0]
-        self.bot4_goal = [2,0]
-        self.goal = [self.bot1_goal,self.bot2_goal,self.bot3_goal, self.bot4_goal]
+        self.goal=[[0,0] for i in range(self.total_bots)]
 
         self.position = []
         self.velocity = [[0,0] for i in range(self.total_bots)]
@@ -71,9 +67,8 @@ class RobotHRVO(object):
         v_des = compute_V_des(self.position, self.goal,self.v_max)
         self.velocity = RVO_update(self.position, v_des, self.velocity_detect,self.ws_model)
         # print(self.velocity)
-
             # param_point = self.point_generator(self.velocity[i][0],self.velocity[i][0])
-        cmd_vel = self.PID.Velocity_tracking_law(self.velocity[0][0],self.velocity[0][1])
+        cmd_vel = self.PID.Velocity_tracking_law(self.velocity[self.cur_bot_id_indx][0],self.velocity[self.cur_bot_id_indx][1])
         self.cmd_vel.publish(cmd_vel)
             # print(self.PID[i].name)
 
@@ -107,8 +102,8 @@ class RobotHRVO(object):
         bot_id = data.bot_id
         odoms = data.obstacles
         self.cur_bot_id_indx = bot_id.index(self.namespace)
-        bot_odom = odoms.pop(self.cur_bot_id_indx)
-        odoms.insert(0,bot_odom)
+        # bot_odom = odoms.pop(self.cur_bot_id_indx)
+        # odoms.insert(0,bot_odom)
         self.bot_odom = odoms
 
 
@@ -129,8 +124,6 @@ class RobotHRVO(object):
             #update velocity
             self.velocity_detect[i] = [self.bot_odom[i].twist.twist.linear.x,self.bot_odom[i].twist.twist.linear.y]
             #print()
-        goal_cur = self.goal.pop(self.cur_bot_id_indx)
-        self.goal.insert(0,goal_cur)
         
 
     def odom_update_0(self,data):

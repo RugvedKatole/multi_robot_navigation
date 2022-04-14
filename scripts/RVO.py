@@ -16,7 +16,7 @@ def distance(pose1, pose2):
 def RVO_update(X, V_des, V_current, ws_model):
     """ compute best velocity given the desired velocity, current velocity and workspace model
     args** start , v_des, V_current, ws model"""
-    ROB_RAD = ws_model['robot_radius'] + 0.05  #robot radius
+    ROB_RAD = ws_model['robot_radius'] + 0.03 #robot radius
     V_opt = list(V_current)        # current velocity vector of 4 robots
     for i in range(len(X)):         # X is the current position of robot in X Y #here vector of 4
         vA = [V_current[i][0], V_current[i][1]] 
@@ -75,8 +75,8 @@ def intersect(pA, vA, RVO_BA_all):
     norm_v = distance(vA, [0, 0])
     suitable_V = []
     unsuitable_V = []
-    for theta in numpy.arange(0, 2*PI, 0.1):
-        for rad in numpy.arange(0.02, norm_v+0.02, norm_v/5.0):
+    for theta in numpy.arange(0, 2*PI, 0.05):
+        for rad in numpy.arange(0.02, norm_v+0.02, norm_v/10.0):
             new_v = [rad*cos(theta), rad*sin(theta)]
             suit = True  # boolean to know if a velocity is suitable
             for RVO_BA in RVO_BA_all:
@@ -183,11 +183,11 @@ def in_between(theta_right, theta_dif, theta_left):
 def compute_V_des(X, goal, V_max):
     V_des = []
     for i in range(len(X)):
-        dif_x = [goal[0][k]-X[0][k] for k in range(2)]
+        dif_x = [goal[i][k]-X[i][k] for k in range(2)]
         norm = distance(dif_x, [0, 0])
         norm_dif_x = [dif_x[k]*V_max[k]/norm for k in range(2)]
         V_des.append(norm_dif_x[:])
-        if reach(X[i], goal[i], 0.05):
+        if reach(X[i], goal[i], 0.1):
             V_des[i][0] = 0
             V_des[i][1] = 0
     return V_des   # return Vx and Vy

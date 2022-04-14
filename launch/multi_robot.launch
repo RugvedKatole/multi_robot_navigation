@@ -44,7 +44,7 @@
     </node>
     
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg first_tb3) -x $(arg first_tb3_x_pos) -y $(arg first_tb3_y_pos) -z $(arg first_tb3_z_pos) -Y $(arg first_tb3_yaw) -param robot_description" />
-    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_0">
+    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_0" output="screen">
       <remap from="/odom" to="/$(arg first_tb3)/odom"/>
       <remap from="/cmd_vel" to="/$(arg first_tb3)/cmd_vel"/>
     </node>
@@ -64,7 +64,7 @@
     </node>
 
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg second_tb3) -x $(arg second_tb3_x_pos) -y $(arg second_tb3_y_pos) -z $(arg second_tb3_z_pos) -Y $(arg second_tb3_yaw) -param robot_description" />
-    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_1">
+    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_1" output="screen">
       <remap from="/odom" to="/$(arg second_tb3)/odom"/>
       <remap from="/cmd_vel" to="/$(arg second_tb3)/cmd_vel"/>
     </node>
@@ -79,7 +79,7 @@
     </node>
 
     <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model $(arg third_tb3) -x $(arg third_tb3_x_pos) -y $(arg third_tb3_y_pos) -z $(arg third_tb3_z_pos) -Y $(arg third_tb3_yaw) -param robot_description" />
-    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_2">
+    <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="Obstacle_avoidance_2" output="screen">
       <remap from="/odom" to="/$(arg third_tb3)/odom"/>
       <remap from="/cmd_vel" to="/$(arg third_tb3)/cmd_vel"/>
     </node>
