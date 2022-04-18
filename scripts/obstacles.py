@@ -41,7 +41,7 @@ class Obstacles:
 if __name__ == '__main__':
     rospy.init_node('collision_cone_obstacles', anonymous = True)
     s = Obstacles()
-    r = rospy.Rate(30)
+    r = rospy.Rate(50)
     while not rospy.is_shutdown():
         obs = []
         bot_id = []

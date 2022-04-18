@@ -34,6 +34,7 @@
     <arg name="debug" value="false"/>
   </include>  
 
+  <rosparam file="$(find mrpp_sumo)/config/through_modified_basic_0_c_10/through_modified_basic_0_c_10_8.yaml" />
 
   <group ns = "$(arg first_tb3)">
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(find turtlebot3_description)/urdf/turtlebot3_$(arg model).urdf.xacro" />
@@ -102,5 +103,6 @@
   </group>
 
   <node pkg="multi_robot_navigation" type="obstacles.py" name="obs_data"/>
+  <node pkg="mrpp_sumo" type="tpbp_modified_basic.py" name = "patrol_algo"/>
 
 </launch>
