@@ -107,18 +107,18 @@ class RobotHRVO(object):
         
         goal = self.get_goal()
         v_des = compute_V_des(self.position, goal,self.v_max)
-        if reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx]):
-            self.update_goal()
-            print("updating goal")
-            goal = self.get_goal()
         #rospy.wait_for_service("Next_goal_location",)
 
-
         self.velocity = RVO_update(self.position, v_des, self.velocity_detect,self.ws_model)
-        print(self.velocity,self.namespace)
+        # print(self.velocity,self.namespace)
             # param_point = self.point_generator(self.velocity[i][0],self.velocity[i][0])
         cmd_vel = self.PID.Velocity_tracking_law(self.velocity[self.cur_bot_id_indx][0],self.velocity[self.cur_bot_id_indx][1])
         self.cmd_vel.publish(cmd_vel)
+        if reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx]):
+        # if v_des[self.cur_bot_id_indx] == [0,0]:
+            self.update_goal()
+            print("updating goal")
+            goal = self.get_goal()
             # print(self.PID[i].name)
 
 if __name__ == "__main__":
