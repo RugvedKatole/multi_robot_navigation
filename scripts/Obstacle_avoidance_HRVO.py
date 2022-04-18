@@ -24,7 +24,7 @@ class RobotHRVO(object):
         self.cmd_vel = rospy.Publisher("cmd_vel",Twist,queue_size=1)
 
         #service to get path
-        self.next_task_service = rospy.ServiceProxy("bot_next_task",NextTaskBot)
+        self.next_task_service = rospy.ServiceProxy("bot_next_task",NextTaskBot )
 
         #
         self.route = []
@@ -61,6 +61,7 @@ class RobotHRVO(object):
     def update_walk(self):
         print("update_walk")
         rospy.wait_for_service('bot_next_task')
+        print("updating walk")
         task_update = self.next_task_service(rospy.get_time(),self.namespace,self.last_node)
         self.route = task_update.task
         self.last_node = task_update.task[-1]
@@ -106,6 +107,7 @@ class RobotHRVO(object):
         self.update_all()
         
         goal = self.get_goal()
+        print(goal)
         v_des = compute_V_des(self.position, goal,self.v_max)
         #rospy.wait_for_service("Next_goal_location",)
 
@@ -116,6 +118,8 @@ class RobotHRVO(object):
         self.cmd_vel.publish(cmd_vel)
         if reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx]):
         # if v_des[self.cur_bot_id_indx] == [0,0]:
+            cmd_vel = self.PID.Velocity_tracking_law(0,0)
+            self.cmd_vel.publish(cmd_vel)
             self.update_goal()
             print("updating goal")
             goal = self.get_goal()
