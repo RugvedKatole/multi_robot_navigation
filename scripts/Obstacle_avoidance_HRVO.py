@@ -10,7 +10,7 @@ from tf.transformations import euler_from_quaternion
 import rospy
 from PID_control import PID_control
 from multi_robot_navigation.msg import Obs, ObsData
-from mrpp_sumo.srv import NextTaskBot, NextTaskBotResponse
+from multi_robot_navigation.srv import NextTaskBot, NextTaskBotResponse
 import networkx as nx
 import rospkg
 
@@ -41,7 +41,7 @@ class RobotHRVO(object):
         self.PID = PID_control(self.namespace)
         
         #get the graph
-        self.graph = nx.read_graphml(rospkg.RosPack().get_path('multi_robot_navigation') + rospy.get_param("/graph")+".graphml")
+        self.graph = nx.read_graphml(rospkg.RosPack().get_path('multi_robot_navigation') +"/"+ rospy.get_param("/graph")+".graphml")
         #initializing HRVO env
         self.ws_model = dict()
         self.ws_model["robot_radius"] = 0.2
