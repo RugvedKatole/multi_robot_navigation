@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
  
+from posixpath import dirname
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Pose2D , Twist
 from RVO import RVO_update, compute_V_des, reach
@@ -11,6 +12,7 @@ from PID_control import PID_control
 from multi_robot_navigation.msg import Obs, ObsData
 from mrpp_sumo.srv import NextTaskBot, NextTaskBotResponse
 import networkx as nx
+import rospkg
 
 class RobotHRVO(object):
     def __init__(self, no_of_robots):
@@ -24,7 +26,7 @@ class RobotHRVO(object):
         self.cmd_vel = rospy.Publisher("cmd_vel",Twist,queue_size=1)
 
         #service to get path
-        self.next_task_service = rospy.ServiceProxy("bot_next_task",NextTaskBot )
+        self.next_task_service = rospy.ServiceProxy("/bot_next_task",NextTaskBot )
 
         #
         self.route = []
@@ -37,9 +39,9 @@ class RobotHRVO(object):
 
         #initializing PID (tracking control law)
         self.PID = PID_control(self.namespace)
-
+        
         #get the graph
-        self.graph = nx.read_graphml("/home/arms04/catkin_ws/src/mrpp_sumo/graph_ml/"+rospy.get_param("/graph")+".graphml")
+        self.graph = nx.read_graphml(rospkg.RosPack().get_path('multi_robot_navigation') + rospy.get_param("/graph")+".graphml")
         #initializing HRVO env
         self.ws_model = dict()
         self.ws_model["robot_radius"] = 0.2
@@ -51,7 +53,7 @@ class RobotHRVO(object):
         self.position = []
         self.velocity = [[0,0] for i in range(self.total_bots)]
         self.velocity_detect = [[0,0] for i in range(self.total_bots)]
-        self.v_max = [0.2 for i in range(self.total_bots)]
+        self.v_max = [0.1 for i in range(self.total_bots)]
 
         self.delta_t = 0.2
         self.cur_bot_id_indx = 0
@@ -60,7 +62,7 @@ class RobotHRVO(object):
     
     def update_walk(self):
         print("update_walk")
-        rospy.wait_for_service('bot_next_task')
+        rospy.wait_for_service('/bot_next_task')
         print("updating walk")
         task_update = self.next_task_service(rospy.get_time(),self.namespace,self.last_node)
         self.route = task_update.task
@@ -107,7 +109,6 @@ class RobotHRVO(object):
         self.update_all()
         
         goal = self.get_goal()
-        print(goal)
         v_des = compute_V_des(self.position, goal,self.v_max)
         #rospy.wait_for_service("Next_goal_location",)
 
@@ -116,8 +117,8 @@ class RobotHRVO(object):
             # param_point = self.point_generator(self.velocity[i][0],self.velocity[i][0])
         cmd_vel = self.PID.Velocity_tracking_law(self.velocity[self.cur_bot_id_indx][0],self.velocity[self.cur_bot_id_indx][1])
         self.cmd_vel.publish(cmd_vel)
-        if reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx]):
-        # if v_des[self.cur_bot_id_indx] == [0,0]:
+        # if reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx]):
+        if v_des[self.cur_bot_id_indx] == [0,0] or reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx],0.3):
             cmd_vel = self.PID.Velocity_tracking_law(0,0)
             self.cmd_vel.publish(cmd_vel)
             self.update_goal()
