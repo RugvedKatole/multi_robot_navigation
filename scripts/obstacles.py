@@ -25,20 +25,21 @@ class Obstacles:
         # self.obs['/tb3_3/'] = Odometry()
 
         #comment following lines if trying to gazebo simulation
-        rospy.Subscriber('/vicon/fb5_10/fb5_10', TransformStamped, self.callback_odom, '/tb3_0/')
-        rospy.Subscriber('/vicon/fb5_2/fb5_2', TransformStamped, self.callback_odom, '/tb3_1/')
-        rospy.Subscriber('/vicon/fb5_13/fb5_13', TransformStamped, self.callback_odom, '/tb3_2/')
-        rospy.Subscriber('/vicon/fb5_12/fb5_12', TransformStamped, self.callback_odom, '/tb3_3/')
         self.prev_pose = {}
         self.prev_pose['/tb3_0/'] = Pose2D()
         self.prev_pose['/tb3_1/'] = Pose2D()
         self.prev_pose['/tb3_2/'] = Pose2D()
-        self.prev_pose['/tb3_3/'] = Pose2D()
+        # self.prev_pose['/tb3_3/'] = Pose2D()
         self.obs = {}
         self.obs['/tb3_0/'] = Odometry()
         self.obs['/tb3_1/'] = Odometry()
         self.obs['/tb3_2/'] = Odometry()
-        self.obs['/tb3_3/'] = Odometry()
+        # self.obs['/tb3_3/'] = Odometry()
+        rospy.Subscriber('/vicon/fb5_10/fb5_10', TransformStamped, self.callback_odom, '/tb3_1/')
+        # rospy.Subscriber('/vicon/fb5_2/fb5_2', TransformStamped, self.callback_odom, '/tb3_1/')
+        rospy.Subscriber('/vicon/fb5_13/fb5_13', TransformStamped, self.callback_odom, '/tb3_2/')
+        rospy.Subscriber('/vicon/fb5_12/fb5_12', TransformStamped, self.callback_odom, '/tb3_0/')
+
 
     def callback_odom(self, data, bot_id):
         odom = Odometry()
@@ -86,6 +87,6 @@ if __name__ == '__main__':
         obs_data = ObsData()
         obs_data.obstacles = obs
         obs_data.bot_id = bot_id
-        # print(obs_data)
+        print(obs_data)
         s.obs_pub.publish(obs_data)
         r.sleep() 

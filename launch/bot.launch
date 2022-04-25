@@ -1,4 +1,4 @@
 <launch>
     <node pkg="syscon_fb5" type="bot_interface.py" name="bot_interface"/>
     <node pkg="multi_robot_navigation" type="Obstacle_avoidance_HRVO.py" name="HRVO"/>
-<launch/>
+</launch>
