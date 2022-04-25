@@ -9,14 +9,14 @@ project(multi_robot_navigation)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   std_msgs
-  turtlebot3_gazebo
-  turtlebot3_msgs
-  gazebo_ros
+  # turtlebot3_gazebo
+  # turtlebot3_msgs
+  # gazebo_ros
   nav_msgs
   roscpp
   rospy
   geometry_msgs
-  actionlib
+  # actionlib
   message_generation
 )
 
