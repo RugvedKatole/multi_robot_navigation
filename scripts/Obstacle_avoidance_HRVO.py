@@ -78,7 +78,7 @@ class RobotHRVO(object):
 
     def get_goal(self):
         goal = [[0,0] for i in range(self.total_bots)]
-        goal[self.cur_bot_id_indx]=[self.graph.nodes[self.goal_nodes[self.cur_bot_id_indx]]["x"]/100, self.graph.nodes[self.goal_nodes[self.cur_bot_id_indx]]["y"]/100] 
+        goal[self.cur_bot_id_indx]=[self.graph.nodes[self.goal_nodes[self.cur_bot_id_indx]]["x"]/100-2, self.graph.nodes[self.goal_nodes[self.cur_bot_id_indx]]["y"]/100-2] 
         return goal
 
     def update_obstacles(self,data):
