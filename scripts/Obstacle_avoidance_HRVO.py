@@ -84,7 +84,7 @@ class RobotHRVO(object):
     def update_obstacles(self,data):
         bot_id = data.bot_id
         odoms = data.obstacles
-        self.cur_bot_id_indx = bot_id.index(self.namespace)
+        self.cur_bot_id_indx = bot_id.index("/bot_0/")
         self.bot_odom = odoms
 
 
