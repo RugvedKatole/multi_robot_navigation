@@ -2,36 +2,36 @@
 
 import math
 import numpy as np
-from geometry_msgs.msg import Pose2D,  Twist
+from geometry_msgs.msg import Pose2D,  Twist, TransformStamped
 from nav_msgs.msg import Odometry
 import rospy
 from tf.transformations import euler_from_quaternion
 
 pi = np.pi
 class PID_control():
-    def __init__(self,PID_name,kv = 1.2 , kalpha = 1.1,publisher_name='/cmd_vel', odom_name='/odom'):
+    def __init__(self,PID_name,kv = 1.2 , kalpha = 1.1,publisher_name='/cmd_vel', odom_name='vicon/fb5_13/fb5_13'):
         self.name = PID_name
         self.kv = kv
         self.ka = kalpha
 
         self.current_time = rospy.get_time()
-        self.pub_cmd_vel = rospy.Publisher(publisher_name,Twist,queue_size=1)
+        # self.pub_cmd_vel = rospy.Publisher(publisher_name,Twist,queue_size=1)
         self.bot_location = Pose2D()
         self.bot_vel = Twist()
-        rospy.Subscriber(odom_name, Odometry, self.callback_odom)
+        rospy.Subscriber(odom_name, TransformStamped, self.callback_odom)
 
 
     def callback_odom(self, data):
-        self.bot_location.x = data.pose.pose.position.x
-        self.bot_location.y = data.pose.pose.position.y
-        orient = data.pose.pose.orientation
-        (roll, pitch, yaw) = euler_from_quaternion([orient.x, orient.y, orient.z, orient.w])
+        self.bot_location.x = data.transform.translation.x
+        self.bot_location.y = data.transform.translation.y
+        orient = data.transform.rotation
+        (roll, pitch, yaw) = euler_from_quaternion([data.transform.rotation.x, data.transform.rotation.y, data.transform.rotation.z, data.transform.rotation.w])
         if yaw < 0:
-            yaw += 2 * pi
+            yaw += 2 * math.pi
         self.bot_location.theta = yaw
-        self.bot_vel.linear.x = data.twist.twist.linear.x
-        self.bot_vel.linear.y = data.twist.twist.linear.y
-        self.bot_vel.angular.z = data.twist.twist.angular.z
+        # self.bot_vel.linear.x = data.twist.twist.linear.x
+        # self.bot_vel.linear.y = data.twist.twist.linear.y
+        # self.bot_vel.angular.z = data.twist.twist.angular.z
 
     def E_alpha_i(self,goal_pose,cur_pose):
 
