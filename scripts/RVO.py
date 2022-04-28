@@ -75,7 +75,7 @@ def intersect(pA, vA, RVO_BA_all):
     norm_v = distance(vA, [0, 0])
     suitable_V = []
     unsuitable_V = []
-    for theta in numpy.arange(0, 2*PI, 0.5):
+    for theta in numpy.arange(0, 2*PI, 0.25):
         for rad in numpy.arange(0.02, norm_v+0.02, norm_v/5.0):
             new_v = [rad*cos(theta), rad*sin(theta)]
             suit = True  # boolean to know if a velocity is suitable

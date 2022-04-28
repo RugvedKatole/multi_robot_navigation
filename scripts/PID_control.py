@@ -9,7 +9,7 @@ from tf.transformations import euler_from_quaternion
 
 pi = np.pi
 class PID_control():
-    def __init__(self,PID_name,kv = 1.2 , kalpha = 1.1,publisher_name='/cmd_vel', odom_name='vicon/fb5_13/fb5_13'):
+    def __init__(self,PID_name,kv = 1.2 , kalpha = 1.1,publisher_name='/cmd_vel', odom_name='/vicon/fb5_13/fb5_13'):
         self.name = PID_name
         self.kv = kv
         self.ka = kalpha

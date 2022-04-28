@@ -47,6 +47,7 @@ class RobotHRVO(object):
         self.ws_model["robot_radius"] = 0.2
         self.ws_model["circular_obstacles"] = []
         self.ws_model['boundary'] = []
+        
         self.goal_nodes = rospy.get_param('/init_locations').split(' ')
         self.position = []
         self.velocity = [[0,0] for i in range(self.total_bots)]
@@ -76,14 +77,14 @@ class RobotHRVO(object):
 
     def get_goal(self):
         goal = [[0,0] for i in range(self.total_bots)]
-       # goal[self.cur_bot_id_indx]=[self.graph.nodes[self.goal_nodes[self.cur_bot_id_indx]]["x"]/100-2, self.graph.nodes[self.goal_nodes[self.cur_bot_id_indx]]["y"]/100-2] 
+        goal[self.cur_bot_id_indx]=[self.graph.nodes[self.goal_nodes[self.cur_bot_id_indx]]["x"]/100-2, self.graph.nodes[self.goal_nodes[self.cur_bot_id_indx]]["y"]/100-2] 
         return goal
 
     def update_obstacles(self,data):
         bot_id = data.bot_id
         odoms = data.obstacles
         self.cur_bot_id_indx = bot_id.index("/tb3_2/")
-        self.cur_bot_id_indx = 0
+#        self.cur_bot_id_indx = 0
         self.bot_odom = odoms
 
 
@@ -114,9 +115,9 @@ class RobotHRVO(object):
             # param_point = self.point_generator(self.velocity[i][0],self.velocity[i][0])
         cmd_vel = self.PID.Velocity_tracking_law(self.velocity[self.cur_bot_id_indx][0],self.velocity[self.cur_bot_id_indx][1])
         self.cmd_vel.publish(cmd_vel)
-        print(cmd_vel)
+        print(goal,self.position)
         # if reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx]):
-        if v_des[self.cur_bot_id_indx] == [0,0] or reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx],0.3):
+        if v_des[self.cur_bot_id_indx] == [0,0] or reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx],0.1):
             cmd_vel = self.PID.Velocity_tracking_law(0,0)
             self.cmd_vel.publish(cmd_vel)
             self.update_goal()
@@ -125,7 +126,7 @@ class RobotHRVO(object):
 
 if __name__ == "__main__":
     rospy.init_node("Obstacle_avoidance_HRVO")
-    avoid = RobotHRVO(1)
+    avoid = RobotHRVO(3)
     rospy.spin()
 
 
