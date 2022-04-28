@@ -13,6 +13,7 @@ from multi_robot_navigation.msg import Obs, ObsData
 from mrpp_sumo.srv import NextTaskBot, NextTaskBotResponse
 import networkx as nx
 import rospkg
+from multi_robot_navigation.srv import RVO
 
 class RobotHRVO(object):
     def __init__(self, no_of_robots):
@@ -20,7 +21,7 @@ class RobotHRVO(object):
         self.namespace = rospy.get_namespace()
         rospy.loginfo("[%s] Initiazlizing " %self.node_name)
         self.total_bots = no_of_robots
-        
+        self.RVO_update = rospy.ServiceProxy("/RVO_update",RVO)
         #pubs and subs
         self.obstacles = rospy.Subscriber('/obs_data',ObsData,self.update_obstacles)
         self.cmd_vel = rospy.Publisher("cmd_vel",Twist,queue_size=1)
@@ -108,7 +109,6 @@ class RobotHRVO(object):
     def hrvo(self, event):
         self.update_all()
         goal = self.get_goal()
-        print(goal)
         v_des = compute_V_des(self.position, goal,self.v_max)
         #rospy.wait_for_service("Next_goal_location",)
         self.velocity = RVO_update(self.position, v_des, self.velocity_detect,self.ws_model)
@@ -116,6 +116,7 @@ class RobotHRVO(object):
             # param_point = self.point_generator(self.velocity[i][0],self.velocity[i][0])
         cmd_vel = self.PID.Velocity_tracking_law(self.velocity[self.cur_bot_id_indx][0],self.velocity[self.cur_bot_id_indx][1])
         self.cmd_vel.publish(cmd_vel)
+        print(goal,self.position)
         # if reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx]):
         if v_des[self.cur_bot_id_indx] == [0,0] or reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx],0.1):
             cmd_vel = self.PID.Velocity_tracking_law(0,0)
@@ -126,7 +127,7 @@ class RobotHRVO(object):
 
 if __name__ == "__main__":
     rospy.init_node("Obstacle_avoidance_HRVO")
-    avoid = RobotHRVO(4)
+    avoid = RobotHRVO(3)
     rospy.spin()
 
 

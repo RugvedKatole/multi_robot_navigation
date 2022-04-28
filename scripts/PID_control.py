@@ -15,7 +15,7 @@ class PID_control():
         self.ka = kalpha
 
         self.current_time = rospy.get_time()
-        # self.pub_cmd_vel = rospy.Publisher(publisher_name,Twist,queue_size=1)
+        self.pub_cmd_vel = rospy.Publisher(publisher_name,Twist,queue_size=1)
         self.bot_location = Pose2D()
         self.bot_vel = Twist()
         rospy.Subscriber(odom_name, TransformStamped, self.callback_odom)
@@ -85,13 +85,15 @@ class PID_control():
         param_points.x = 0.1*np.cos(v_des) + self.bot_location.x
         param_points.y = 0.1*np.sin(v_des) + self.bot_location.y
         param_points.theta = 0
-        self.Velocity_tracking_law(param_points)
+        cmd_vel = self.Velocity_tracking_law(param_points)
+        self.pub_cmd_vel.publish(cmd_vel)
+        
 
 
 
 if __name__ == '__main__':
     rospy.init_node('PID_control')
-    PID = PID_control("circle",publisher_name="/tb3_1/cmd_vel",odom_name="/tb3_1/odom")
+    PID = PID_control("circle",publisher_name="/tb3_2/cmd_vel")
     r=rospy.Rate(50)
     param_points = Pose2D()
     rad = 2

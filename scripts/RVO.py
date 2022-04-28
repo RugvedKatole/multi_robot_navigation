@@ -31,6 +31,8 @@ def RVO_update(X, V_des, V_current, ws_model):
                 # use VO
                 #transl_vB_vA = [pA[0]+vB[0], pA[1]+vB[1]]
                 dist_BA = distance(pA, pB)      #distance between robots
+                if dist_BA < 0.5:
+                    continue
                 theta_BA = atan2(pB[1]-pA[1], pB[0]-pA[0])  #angle between robots
                 if 2*ROB_RAD > dist_BA:
                     dist_BA = 2*ROB_RAD             # assuming robots are identical hence same radii
@@ -75,8 +77,8 @@ def intersect(pA, vA, RVO_BA_all):
     norm_v = distance(vA, [0, 0])
     suitable_V = []
     unsuitable_V = []
-    for theta in numpy.arange(0, 2*PI, 0.25):
-        for rad in numpy.arange(0.02, norm_v+0.02, norm_v/5.0):
+    for theta in numpy.arange(0, 2*PI, 0.01):
+        for rad in numpy.arange(0.02, norm_v+0.02, norm_v/15.0):
             new_v = [rad*cos(theta), rad*sin(theta)]
             suit = True  # boolean to know if a velocity is suitable
             for RVO_BA in RVO_BA_all:
