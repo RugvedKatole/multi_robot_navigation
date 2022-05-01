@@ -118,6 +118,7 @@ class RobotHRVO(object):
         self.cmd_vel.publish(cmd_vel)
         # if reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx]):
         if v_des[self.cur_bot_id_indx] == [0,0] or reach(self.position[self.cur_bot_id_indx],goal[self.cur_bot_id_indx],0.1):
+            rospy.sleep(5)
             cmd_vel = self.PID.Velocity_tracking_law(0,0)
             self.cmd_vel.publish(cmd_vel)
             self.update_goal()
