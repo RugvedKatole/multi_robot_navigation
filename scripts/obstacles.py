@@ -42,6 +42,7 @@ class Obstacles:
 
     def callback_odom(self, data, bot_id):
         odom = Odometry()
+        odom.header.stamp = data.header.stamp
         odom.pose.pose.position.x = data.transform.translation.x
         odom.pose.pose.position.y = data.transform.translation.y
         odom.pose.pose.position.z = data.transform.translation.z

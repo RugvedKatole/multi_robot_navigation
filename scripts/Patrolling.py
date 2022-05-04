@@ -27,8 +27,6 @@ class RobotHRVO(object):
         self.cmd_pub1 = rospy.Publisher("/tb3_1/cmd_vel",Twist,queue_size=1)
         self.cmd_pub2 = rospy.Publisher("/tb3_2/cmd_vel",Twist,queue_size=1)
         self.cmd_pub3 = rospy.Publisher("/tb3_3/cmd_vel",Twist,queue_size=1)
-
-
         
         #robot status
         self.bot_odom = [Odometry() for i in range(self.total_bots)]
@@ -36,7 +34,9 @@ class RobotHRVO(object):
         self.yaw = [0 for i in range(self.total_bots)]
 
         #initializing PID (tracking control law)
-        self.PID = PID_control("baba_mahakal")
+        self.PID = [PID_control("bot_%i" %i,publisher_name="/tb3_%j/cmd_vel" %i,odom_name= "/vicon/fb_%i/fb_%i" %i) for i in [12,10,2,13]]
+        # self.PID = PID_control("baba mahakal")
+
 
         #initializing HRVI env
         self.ws_model = dict()
@@ -49,10 +49,16 @@ class RobotHRVO(object):
         self.position = []
         self.velocity = [[0,0] for i in range(self.total_bots)]
         self.velocity_detect = [[0,0] for i in range(self.total_bots)]
-        self.v_max = [0.15 for i in range(self.total_bots)]
+        self.v_max = [0.2 for i in range(self.total_bots)]
+
+        self.next_task_service = rospy.ServiceProxy("/bot_next_task",NextTaskBot )
 
         self.route = dict()
         self.last_node = dict()
+        self.route[0] = []
+        self.route[1] = []
+        self.route[2] = []
+        self.route[3] = []
 
         #get the graph
         self.graph = nx.read_graphml(rospkg.RosPack().get_path('multi_robot_navigation') +"/"+ rospy.get_param("/graph")+".graphml")
@@ -62,12 +68,14 @@ class RobotHRVO(object):
         self.timer = rospy.Timer(rospy.Duration(self.delta_t), self.hrvo)
 
     def get_goal(self):
+        """converts the node labels to x,y co-ordinate"""
         goal = []
         for i in range(self.total_bots):
             goal.append([self.graph.nodes[self.goal_nodes[i]]["x"]/100-2, self.graph.nodes[self.goal_nodes[i]]["y"]/100-2])
         return goal
 
     def update_goal(self,indx):
+        """Updates the goal location to next node in walk"""
         self.last_node[indx] = self.goal_nodes[indx]
         print(indx)
         if len(self.route[indx])==0:
@@ -75,31 +83,21 @@ class RobotHRVO(object):
         self.goal_nodes[indx] = self.route[indx].pop(0)
     
     def update_walk(self,indx):
+        """Updates the walk when previous walk is completed by the robot"""
         rospy.wait_for_service('/bot_next_task')
         task_update = self.next_task_service(rospy.get_time(),"bot_"+str(indx),self.last_node[indx])
         self.route[indx] = task_update.task
         self.last_node[indx] = task_update.task[-1]
 
+
     def update_obstacles(self,data):
+        """Process the obstacle data"""
         bot_id = data.bot_id
         odoms = data.obstacles
         self.bot_odom = odoms
 
-    def hrvo(self, event):
-        self.update_all()
-        goal = self.get_goal()
-        v_des = compute_V_des(self.position, goal,self.v_max)
-        self.velocity = RVO_update(self.position, v_des, self.velocity_detect,self.ws_model)
-        self.cmd_pub0.publish(self.PID.Velocity_tracking_law(self.velocity[0][0],self.velocity[0][1]))
-        self.cmd_pub1.publish(self.PID.Velocity_tracking_law(self.velocity[1][0],self.velocity[1][1]))
-        self.cmd_pub2.publish(self.PID.Velocity_tracking_law(self.velocity[2][0],self.velocity[2][1]))
-        self.cmd_pub3.publish(self.PID.Velocity_tracking_law(self.velocity[3][0],self.velocity[3][1]))
-
-        for i in range(self.total_bots):
-            if v_des[i] == [0,0] or reach(self.position[i],goal[i],0.1):
-                self.update_goal(i)
-
     def update_all(self):
+        """Process the velocity position of robots from odom data"""
         self.position = []
         for i in range(self.total_bots):
             pos = [self.bot_odom[i].pose.pose.position.x,self.bot_odom[i].pose.pose.position.y]
@@ -114,6 +112,20 @@ class RobotHRVO(object):
             self.yaw[i] = euler[2]
 
             self.velocity_detect[i] = [self.bot_odom[i].twist.twist.linear.x,self.bot_odom[i].twist.twist.linear.y]
+
+    def hrvo(self, event):
+        self.update_all()
+        goal = self.get_goal()
+        v_des = compute_V_des(self.position, goal,self.v_max)
+        self.velocity = RVO_update(self.position, v_des, self.velocity_detect,self.ws_model)
+        self.cmd_pub0.publish(self.PID[0].Velocity_tracking_law(self.velocity[0][0],self.velocity[0][1]))
+        self.cmd_pub1.publish(self.PID[1].Velocity_tracking_law(self.velocity[1][0],self.velocity[1][1]))
+        self.cmd_pub2.publish(self.PID[2].Velocity_tracking_law(self.velocity[2][0],self.velocity[2][1]))
+        self.cmd_pub3.publish(self.PID[3].Velocity_tracking_law(self.velocity[3][0],self.velocity[3][1]))
+
+        for i in range(self.total_bots):
+            if v_des[i] == [0,0] or reach(self.position[i],goal[i],0.1):
+                self.update_goal(i)
 
 if __name__ == "__main__":
     rospy.init_node("Obstacle_avoidance_HRVO")
